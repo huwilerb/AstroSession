@@ -8,15 +8,19 @@ Created on Sat Aug  7 13:07:58 2021
 Comparison of fits in a specific folder
 
 """
-from astropy.io import fits
-import matplotlib.pyplot as plt
-import numpy as np
-from pathlib import Path
-import pandas as pd
-import astro_tools
+from     pathlib             import  Path
+import   numpy               as      np
+import   pandas              as      pd
+from     astropy.io          import  fits
+
+
+
+import   astro_tools
+
+debug = 0
 
 class Session:
-    IMAGES_SET_TYPES =['Dark', 'Light', 'Offset', 'Flat']
+    IMAGES_SET_TYPES =['Dark', 'Light', 'Offset', 'Flat', 'PreprocessedLight', 'Registered']
       
     def __init__(self):
         self.types = []
@@ -31,12 +35,13 @@ class Session:
             raise NameError(f'root path for images is wrong: {self.root}')
                   
     
-    def populate_types(self, restricted =[]):
+    def populate_types(self, restricted=[]):
         self._is_root()
         for path in Path(self.root).iterdir():
-            if path.is_dir() and path.parts[-1] not in restricted:
+            numberfiles = len(list(path.glob('*')))
+            if numberfiles and path.is_dir() and path.parts[-1] not in restricted:
                 self.types.append(path.parts[-1])
-                setattr(self,path.parts[-1].lower(), self.Images_Set(path))
+                setattr(self, path.parts[-1].lower(), self.Images_Set(path))
                 
     
     def remove_type(self, type_to_remove):
@@ -51,12 +56,12 @@ class Session:
             self.path = path
             self.datatype = "images"  
             self.populate_data_image()
-            # self.solve_data_image()
+            self.populate_fits_headers()
             
         def populate_data_image(self):
             files = [x for x in self.path.iterdir() if x.is_file()]
             self.number = len(files)
-            self.data=pd.DataFrame({'Path': files})
+            self.data = pd.DataFrame({'Path': files})
             self.data['Name']= self.data.apply(
                 lambda row: row.Path.parts[-1], axis=1)
             self.data['Extension'] = self.data.apply(
@@ -64,11 +69,14 @@ class Session:
             self.data['Size'] = self.data.apply(
                 lambda row: Path(row.Path).stat().st_size, axis=1)
         
+        def return_headers(self, headers, key):
+            return {path:headers[path][key] for path in headers}
+        
         def populate_fits_headers(self):
-            for file in self.data.Path:
-                headers = astro_tools.read_fits_header(file)
-                for header in headers:
-                    self.data[header]= headers[header]
+            headers = {path:astro_tools.read_fits_header(path) for path in self.data.Path}
+            for key in headers[self.data.Path[0]]:
+                self.data[key] = self.data["Path"].map(self.return_headers(headers, key))
+                
         
         def populate_fits_data(self):
             self.data["Fits"] = self.data.apply(
@@ -80,6 +88,25 @@ class Session:
             self.data["Min"] = self.data.apply(
                 lambda row: np.nanmin(row.Fits), axis=1)
             
+            
+
+    
+    
+    
+    
+    
+
+if __name__ == "__main__":
+    # main()
+    path1 = "/run/media/fred/84a0af0d-182c-45e9-bea9-7fc1fedc8654/home/fred/Blaise/data"
+    s1 = Session()
+    s1.set_root(path1)
+    s1.populate_types(restricted=['process', 'rescaled', 'old', 'misc'])
+    from Aligner import Aligner
+    aligner = Aligner(s1)
+    aligner.align()
+
+    
 def main():
     # s1 = AstroSession()
     # s1.set_root('/home/blaise/Pictures/Astro/america/Session 1')
@@ -125,4 +152,4 @@ def main():
 
 
 
-main()
+
