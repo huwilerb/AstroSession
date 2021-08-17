@@ -36,16 +36,16 @@ class ImagesSet():
             self.data['Size'] = self.data.apply(
                 lambda row: Path(row.Path).stat().st_size, axis=1)
         
-    def return_headers(self, headers, key):
+    def return_headers(self, headers, key): #to test
         return {path:headers[path][key] for path in headers}
         
-    def populate_fits_headers(self):
+    def populate_fits_headers(self): # to test
         headers = {path:astro_tools.read_fits_header(path) for path in self.data.Path}
         for key in headers[self.data.Path[0]]:
             self.data[key] = self.data["Path"].map(self.return_headers(headers,
                                                                        key))
     
-    def images_statistics(self, ratio = 0.2, min =10):
+    def images_statistics(self, ratio = 0.2, min =10): #to test
         dataset_len = self.data.shape[0]
         
         if dataset_len < min:
