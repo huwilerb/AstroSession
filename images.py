@@ -11,6 +11,7 @@ import numpy as np
 
 from astropy.io import fits
 from pathlib import Path
+import pathlib # 
 
 import astro_tools
 from config import Config
@@ -45,14 +46,14 @@ class ImagesSet():
             self.data[key] = self.data["Path"].map(self.return_headers(headers,
                                                                        key))
     
-    def images_statistics(self, ratio = 0.2, min =10): #to test
+    def images_statistics(self, ratio = 0.2, mini =10): #to test
         dataset_len = self.data.shape[0]
         
-        if dataset_len < min:
+        if dataset_len < mini:
             analysis_len = dataset_len
             analysis_type = 'full'
             self.analysis_type = analysis_type #to remove
-        elif dataset_len*ratio < min:
+        elif dataset_len*ratio < mini:
             analysis_len = dataset_len
             analsis_type = 'full'
             self.analysis_type = analysis_type #to remove
@@ -62,29 +63,45 @@ class ImagesSet():
             self.analysis_type = analysis_type #to remove
         
         if analysis_type == 'full':
-            pass
+            image_set_stat = imgs.data.Path[:].to_list()
+            
         
-    def _get_fits_values(self, path): #to test
+    def _get_fits_values(self, path): # -> tested
         data = fits.getdata(path)
         return data
     
-    def _get_fits_mean(self, data, data_type='data'): #to test
-        if data_type == 'data':
-            return np.max(data)
+    def _get_fits_mean(self, data, data_type='data'): # -> tested
+        if data_type == 'data' and type(data) == np.ndarray:
+            return np.mean(data) 
         elif data_type == 'path':
-            return np.max(self._get_fits_values(data))
+            return np.mean(self._get_fits_values(data))
         else:
             raise ValueError(
-                f'The choise {data_type} is not availble. Available choises: data, path')
+                f'The choise {data_type} is not matching data type: {type(data)}',
+                'Please chosse between data: numpy.ndarray and path: PosixPath')
     
-    def _get_fits_mean(self, data, data_type='data'): # to test
-        if data_type == 'data':
+    def _get_fits_max(self, data, data_type='data'): # -> tested
+        if data_type == 'data' and type(data) == np.ndarray:
             return np.max(data)
         elif data_type == 'path':
             return np.max(self._get_fits_values(data))
         else:
             raise ValueError(
-                f'The choise {data_type} is not availble. Available choises: data, path')
+                 f'The choise {data_type} is not matching data type: {type(data)}',
+                'Please chosse between data: numpy.ndarray and path: PosixPath')
+    
+    def _get_fits_std_dev(self, data, data_type='data'): # -> tested
+        if data_type == 'data' and type(data) == np.ndarray:
+            return np.std(data)
+        elif data_type == 'path' and type(data) == pathlib.PosixPath:
+            return np.std(self._get_fits_values(data))
+        else:
+            raise ValueError(
+                f'The choise {data_type} is not matching data type: {type(data)}',
+                'Please chosse between data: numpy.ndarray and path: PosixPath')
+            
+        
+        
         
     
         
