@@ -16,17 +16,19 @@ class Image():
         self.Type = ''
         self.path = path 
         self.__exists()
-
-    def get_meta(self, save:bool=False)->dict:
-        data = astro_tools.read_fits_header(self.path, restricted=Image.config.Restricted_headers)
-        if save:
-            self.headers_dict = data
-        return data
     
-
-
-    def add_meta_to_object(self):
-        pass
+    def get_meta(self, save:bool=False)->dict:
+        return astro_tools.read_fits_header(self.path, restricted=Image.config.Restricted_headers)
+        
+        
+    def populate_meta(self)->None:
+        data = self.get_meta()
+        if Image.config.Headers_attribute_as_list == True:
+            self.headers = data
+        if Image.config.Headers_as_attributes == True:
+            for key in data.keys():
+                self.__setattr__(key, data[key])
+            
 
     def read_image(self):
         pass
