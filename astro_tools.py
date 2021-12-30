@@ -52,6 +52,23 @@ def iter_dir_name(path, dirname):
             return path.joinpath(dir)
     return None
 
+def check_path(path)->bool:
+    """
+    check if a path exists
+
+    Parameters
+    ----------
+    path: PosixPath object
+
+    Returnsas
+    -------
+    bool: True or False
+    """
+    if path.exists():
+        return True
+    else:
+        return False
+
 
 def main ():
     p = Path('/home/blaise/Documents/Astro/Astrosession/test/misc_images/Darks')
