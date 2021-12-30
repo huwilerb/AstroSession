@@ -15,12 +15,23 @@ class Image():
         self.ObjectType = 'Image'
         self.Type = ''
         self.path = path 
-        __exists()
+        self.__exists()
 
-    def get_meta(self):
-        
+    def get_meta(self, save:bool=False)->dict:
+        data = astro_tools.read_fits_header(self.path, restricted=Image.config.Restricted_headers)
+        if save:
+            self.headers_dict = data
+        return data
+    
+
+
+    def add_meta_to_object(self):
+        pass
+
+    def read_image(self):
+        pass
 
     def __exists(self):
         if not astro_tools.check_path(self.path):
-            raise ValueError(f'The file {self.path} do not exists')
+            print(f'The file {self.path} do not exists')
     

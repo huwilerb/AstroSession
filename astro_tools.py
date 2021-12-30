@@ -9,7 +9,7 @@ from pathlib import Path
 import json
 
 
-def read_fits_header(file):
+def read_fits_header(file, restricted:list=[]):
     """
     read the headers from a fits file
 
@@ -17,6 +17,8 @@ def read_fits_header(file):
     ----------
     file : .fits
         a fits image
+    restricted: list
+        a list with the header that we don't want
 
     Returns
     -------
@@ -25,7 +27,7 @@ def read_fits_header(file):
 
     """
     file_o = fits.open(file)
-    h = {str(i): str(file_o[0].header[i]) for i in file_o[0].header}
+    h = {str(i): str(file_o[0].header[i]) for i in file_o[0].header if i not in restricted}
     return h
 
 def iter_dir_name(path, dirname):
