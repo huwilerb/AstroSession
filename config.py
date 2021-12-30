@@ -9,15 +9,28 @@ Created on Sun Aug 15 14:13:09 2021
 from pathlib import Path
 import json
 
+from astro_tools import check_path
+
 class Config:
     """
     Configuration object for AstroSession project
     """
     
-    def __init__(self):
-        self.__dir = Path.cwd()
-        self.__config_file_name ='config.json'
+    def __init__(self, file_dir, file_name):
+        self.__dir = Path(file_dir)
+        self.__config_file_name = file_name
         self.__get_config()
+
+    def __check_file():
+        if check_path(Path.joinpath(self.__dir, self.__file)):
+            return True
+        else:
+            if check_path(self.__dir):
+                print(f'The file {self.__config_file_name} do not exist in {self.__dir}')
+            else:
+                print(f'The directory {self.__dir} do not exists')
+
+        
         
         
     
