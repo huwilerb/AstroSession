@@ -1,4 +1,6 @@
 {
     "Headers_keys": ["SIMPLE", "BITPIX", "NAXIS", "NAXIS1", "NAXIS2", "EXTEND", "COMMENT", "BZERO", "BSCALE", "ROWORDER", "INSTRUME", "TELESCOP", "OBSERVER", "OBJECT", "EXPTIME", "CCD-TEMP", "PIXSIZE1", "PIXSIZE2", "XBINNING", "YBINNING", "XPIXSZ", "YPIXSZ", "FRAME", "IMAGETYP", "XBAYROFF", "YBAYROFF", "BAYERPAT", "FOCALLEN", "APTDIA", "SCALE", "SITELAT", "SITELONG", "AIRMASS", "OBJCTRA", "OBJCTDEC", "RA", "DEC", "EQUINOX", "CRVAL1", "CRVAL2", "RADECSYS", "CTYPE1", "CTYPE2", "CRPIX1", "CRPIX2", "SECPIX1", "SECPIX2", "CDELT1", "CDELT2", "CROTA1", "CROTA2", "DATE-OBS", "GAIN", "OFFSET"],
-    "Restricted_headers":["COMMENT"]
+    "Restricted_headers":["COMMENT"],
+    "Headers_attribute_as_list": 0,
+    "Headers_as_attributes":1
 }

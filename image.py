@@ -13,7 +13,6 @@ class Image():
     
     def __init__(self:None, path)->None:
         self.ObjectType = 'Image'
-        self.Type = ''
         self.path = path 
         self.__exists()
     
@@ -28,7 +27,7 @@ class Image():
         if Image.config.Headers_as_attributes == True:
             for key in data.keys():
                 self.__setattr__(key, data[key])
-            
+                
 
     def read_image(self):
         pass
