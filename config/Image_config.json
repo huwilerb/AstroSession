@@ -4,5 +4,6 @@
     "Restricted_headers":["COMMENT"],
     "Headers_attribute_as_list": 0,
     "Headers_as_attributes":1,
-    "Data_as_attribute": 1
+    "Data_as_attribute": 1,
+    "Data_type_list":["HS_min", "HS_max", "HS_mean", "HS_std"]
 }

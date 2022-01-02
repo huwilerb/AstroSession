@@ -14,21 +14,23 @@ class Data:
             self.populate(data)
         
         def populate(self, data):
-            self.__setattr__("min", int(np.min(data)))
-            self.__setattr__("max", int(np.max(data)))
-            self.__setattr__("mean", np.mean(data))
-            self.__setattr__("std", np.std(data))
+            self.__setattr__("AS_min", int(np.min(data)))
+            self.__setattr__("AS_max", int(np.max(data)))
+            self.__setattr__("AS_mean", np.mean(data))
+            self.__setattr__("AS_std", np.std(data))
 
         def __str__(self):
-            return f'Data stats: min -> {self.min}, max -> {self.max}, mean -> {self.mean}, std -> {self.std}'
+            return f'Data stats: min -> {self.AS_min}, max -> {self.AS_max}, mean -> {self.AS_mean}, std -> {self.AS_std}'
 
 class Image():
     config = Config(Path.joinpath(Path.cwd(), 'config'),'Image_config.json')
     
-    def __init__(self:None, path)->None:
+    def __init__(self:None, path: pathlib.Path, autoFill:bool=True)->None:
         self.ObjectType = 'Image'
         self.path = path 
         self.__exists()
+        if autoFill:
+            self.__autoComplet()   
     
     def get_meta(self)->dict:
         """
@@ -46,8 +48,25 @@ class Image():
         """
         return astro_tools.read_fits_header(self.path, restricted=Image.config.Restricted_headers)
         
-        
-    def populate_meta(self)->None:
+
+    def read_image(self):
+        """
+        read the data of the image and return them 
+
+        """
+        ext = Image.config.HDU_location        
+        return fits.getdata(self.path, ext=ext)
+
+    def __autoComplet(self):
+        meta = self.__populate_meta().keys()
+        cstm = Image.config.Data_type_list
+        if not all(x in meta for x in cstm):
+            self.__populate_data()
+            self.__add_stats_to_meta()
+            self.populate_data()
+
+
+    def __populate_meta(self)->dict:
         """
         populate the metadata in the object regarding to the image configuration file
 
@@ -64,27 +83,29 @@ class Image():
         if Image.config.Headers_as_attributes == True:
             for key in data.keys():
                 self.__setattr__(key, data[key])
-                
+        return data       
 
-    def read_image(self):
-        """
-        read the data of the image and return them 
-
-        """
-        ext = Image.config.HDU_location
-        d = fits.getdata(self.path, ext=ext)
+    def __populate_data(self)->None:
+        d = self.read_image()
         self.__setattr__("data", Data(d))
-        return d
-        
+        return None
+
     
-
-
+    def __add_stats_to_meta(self)->None:
+        for attribute, value in self.data.__dict__.items():
+            self.__modify_header(attribute, str(value))
+        return None
+    
+    def __modify_header(self, header:str, value:str)->None:
+        fits.setval(self.path, header, value=value)
+        return None   
+    
     def __exists(self):
         """
         Check if an image exists
         """
         if not astro_tools.check_path(self.path):
-            print(f'The file {self.path} do not exists')
+            raise ValueError()
     
     @classmethod
     def image_informations_in_HDU_check(cls, update=True):
@@ -96,21 +117,10 @@ class Image():
 
         HDU_in_config = cls.config.HDU_location
         pass
+    
+    def __str__(self):
+        return f'instance of Image'
 
-    class Data:
-
-        def __init__(data):
-            self.data = data
-            self.populate(self.data)
-        
-        def populate(self, data):
-            self.min = np.min(self.data)
-            self.max = np.max(self.data)
-            self.mean = np.mean(self.data)
-            self.std = np.std(self.data)
-
-        def __repr__(self):
-            return {f'Data stats: min -> {self.min}, max -> {self.max}, mean -> {self.mean}, std -> self.std'}
 
     
     
