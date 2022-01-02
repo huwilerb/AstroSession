@@ -53,12 +53,21 @@ class Image():
                 
 
     def read_image(self):
-        data = fits.getdata(self.path)
-        if image.config.data_as_attribute == True:
+        """
+        read the data of the image and return them 
+
+        Options
+        -------
+        The following option for the data in the object, to be changed in the configuration file
+            save image data as a new attribute: Data_as_attribute == True
+        """
+        ext = Image.config.HDU_location
+        data = fits.getdata(self.path, ext=ext)
+        if Image.config.Data_as_attribute == True:
             self.__setattr__("data", data)
         return data
     
-    
+
 
     def __exists(self):
         """
@@ -66,4 +75,5 @@ class Image():
         """
         if not astro_tools.check_path(self.path):
             print(f'The file {self.path} do not exists')
+    
     
