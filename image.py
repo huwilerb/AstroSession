@@ -53,7 +53,12 @@ class Image():
                 
 
     def read_image(self):
-        pass
+        data = fits.getdata(self.path)
+        if image.config.data_as_attribute == True:
+            self.__setattr__("data", data)
+        return data
+    
+    
 
     def __exists(self):
         """
