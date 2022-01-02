@@ -4,5 +4,5 @@
     "Restricted_headers":["COMMENT"],
     "Headers_attribute_as_list": 0,
     "Headers_as_attributes":1,
-    "Data_as_attribute": 0
+    "Data_as_attribute": 1
 }

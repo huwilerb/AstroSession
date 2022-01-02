@@ -8,6 +8,20 @@ import pathlib #
 import astro_tools
 from config import Config
 
+class Data:
+
+        def __init__(self, data):
+            self.populate(data)
+        
+        def populate(self, data):
+            self.__setattr__("min", int(np.min(data)))
+            self.__setattr__("max", int(np.max(data)))
+            self.__setattr__("mean", np.mean(data))
+            self.__setattr__("std", np.std(data))
+
+        def __str__(self):
+            return f'Data stats: min -> {self.min}, max -> {self.max}, mean -> {self.mean}, std -> {self.std}'
+
 class Image():
     config = Config(Path.joinpath(Path.cwd(), 'config'),'Image_config.json')
     
@@ -56,16 +70,12 @@ class Image():
         """
         read the data of the image and return them 
 
-        Options
-        -------
-        The following option for the data in the object, to be changed in the configuration file
-            save image data as a new attribute: Data_as_attribute == True
         """
         ext = Image.config.HDU_location
-        data = fits.getdata(self.path, ext=ext)
-        if Image.config.Data_as_attribute == True:
-            self.__setattr__("data", data)
-        return data
+        d = fits.getdata(self.path, ext=ext)
+        self.__setattr__("data", Data(d))
+        return d
+        
     
 
 
@@ -75,5 +85,32 @@ class Image():
         """
         if not astro_tools.check_path(self.path):
             print(f'The file {self.path} do not exists')
+    
+    @classmethod
+    def image_informations_in_HDU_check(cls, update=True):
+        """
+        Check if the image information are located in the correct HDU according to the configuration file
+        
+        TO BE COMPLETED
+        """
+
+        HDU_in_config = cls.config.HDU_location
+        pass
+
+    class Data:
+
+        def __init__(data):
+            self.data = data
+            self.populate(self.data)
+        
+        def populate(self, data):
+            self.min = np.min(self.data)
+            self.max = np.max(self.data)
+            self.mean = np.mean(self.data)
+            self.std = np.std(self.data)
+
+        def __repr__(self):
+            return {f'Data stats: min -> {self.min}, max -> {self.max}, mean -> {self.mean}, std -> self.std'}
+
     
     
